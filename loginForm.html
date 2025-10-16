@@ -1,0 +1,181 @@
+
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>نموذج تسجيل دخول</title>
+  <style>
+    :root{
+      --card-bg: rgba(255,255,255,0.95);
+      --accent: #b71c1c; /* لون أحمر عميق */
+      --accent-2: #ff5252;
+      --text: #222;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family: 'Segoe UI', Tahoma, 'Helvetica Neue', Arial, NotoSansArabic, sans-serif;
+      background: linear-gradient(180deg, #ff3b3b 0%, #b71c1c 100%); /* خلفية حمراء جذابة */
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:24px;
+      color:var(--text);
+    }
+
+    .card{
+      width:100%;
+      max-width:420px;
+      background:var(--card-bg);
+      border-radius:14px;
+      box-shadow:0 10px 30px rgba(0,0,0,0.25);
+      padding:28px;
+      transform:translateY(-6px);
+      transition:transform 220ms ease, box-shadow 220ms ease;
+      direction:rtl;
+    }
+    .card:focus-within{transform:translateY(0);box-shadow:0 20px 40px rgba(0,0,0,0.32)}
+
+    h1{margin:0 0 8px 0;font-size:22px;text-align:center}
+    p.lead{margin:0 0 18px 0;text-align:center;color:#444}
+
+    .field{margin-bottom:14px}
+    label{
+      display:block;
+      margin-bottom:6px;
+      font-size:14px;
+      color:#333;
+    }
+    input[type="text"], input[type="password"]{
+      width:100%;
+      padding:12px 14px;
+      font-size:15px;
+      border-radius:8px;
+      border:1px solid rgba(0,0,0,0.12);
+      outline:none;
+    }
+    input:focus{box-shadow:0 0 0 4px rgba(183,28,28,0.08);border-color:var(--accent)}
+
+    .row{display:flex;gap:10px;align-items:center}
+    .remember{display:flex;align-items:center;gap:8px;font-size:14px}
+
+    .actions{margin-top:18px}
+    button.btn{
+      width:100%;
+      padding:12px 16px;
+      font-size:16px;
+      border-radius:10px;
+      border:none;
+      cursor:pointer;
+      background:linear-gradient(90deg,var(--accent),var(--accent-2));
+      color:white;
+    }
+    button.btn:active{transform:translateY(1px)}
+
+    .secondary{background:transparent;color:var(--accent);border:1px solid rgba(183,28,28,0.12)}
+
+    .hint{font-size:13px;color:#666;margin-top:10px;text-align:center}
+
+    .pw-toggle{background:none;border:none;cursor:pointer;padding:6px;border-radius:6px}
+
+    .error{color:#b00020;font-size:13px;margin-top:6px}
+
+    @media (max-width:480px){
+      .card{padding:20px;border-radius:12px}
+      h1{font-size:20px}
+    }
+  </style>
+</head>
+<body>
+  <main class="card" role="main">
+    <h1>تسجيل الدخول</h1>
+    <p class="lead">أدخل الإيدي وكلمة السر للمتابعة</p>
+
+    <form id="loginForm" novalidate>
+      <div class="field">
+        <label for="userId">الإيدي (ID)</label>
+        <input id="userId" name="userId" type="text" inputmode="text" autocomplete="username" placeholder="أدخل الإيدي" required aria-required="true" />
+        <div id="idError" class="error" aria-live="polite" style="display:none"></div>
+      </div>
+
+      <div class="field">
+        <label for="password">كلمة السر</label>
+        <div style="display:flex;gap:8px;align-items:center">
+          <input id="password" name="password" type="password" autocomplete="current-password" placeholder="أدخل كلمة السر" required aria-required="true" style="flex:1" />
+          <button type="button" class="pw-toggle" id="togglePw" aria-label="إظهار كلمة السر">👁️</button>
+        </div>
+        <div id="pwError" class="error" aria-live="polite" style="display:none"></div>
+      </div>
+
+      <div class="row">
+        <label class="remember"><input type="checkbox" id="remember" name="remember" /> تذكرني</label>
+      </div>
+
+      <div class="actions">
+        <button class="btn" type="submit">دخول</button>
+      </div>
+
+      <div class="hint">نسيت كلمة السر؟ <button type="button" class="secondary" style="margin-top:8px;display:inline-block;padding:8px 12px;border-radius:8px" id="forgotBtn">استعادة</button></div>
+    </form>
+  </main>
+
+
+<script>
+    const form = document.getElementById('loginForm');
+    const userId = document.getElementById('userId');
+    const password = document.getElementById('password');
+    const idError = document.getElementById('idError');
+    const pwError = document.getElementById('pwError');
+    const togglePw = document.getElementById('togglePw');
+    const forgotBtn = document.getElementById('forgotBtn');
+
+    togglePw.addEventListener('click', () => {
+      if(password.type === 'password'){
+        password.type = 'text';
+        togglePw.setAttribute('aria-label', 'إخفاء كلمة السر');
+        togglePw.textContent = '🙈';
+      } else {
+        password.type = 'password';
+        togglePw.setAttribute('aria-label', 'إظهار كلمة السر');
+        togglePw.textContent = '👁️';
+      }
+    });
+
+    forgotBtn.addEventListener('click', () => {
+      alert('خاصية استعادة كلمة السر غير مفعّلة في العرض التجريبي.');
+    });
+
+    function validate(){
+      let ok = true;
+      idError.style.display='none'; pwError.style.display='none';
+
+      if(userId.value.trim().length < 3){
+        idError.textContent = 'الإيدي يجب أن يحتوي على 3 أحرف على الأقل.';
+        idError.style.display='block';
+        ok = false;
+      }
+      if(password.value.length < 6){
+        pwError.textContent = 'كلمة السر يجب أن تتكون من 6 أحرف أو أكثر.';
+        pwError.style.display='block';
+        ok = false;
+      }
+      return ok;
+    }
+
+    form.addEventListener('submit', (e)=>{
+      e.preventDefault();
+      if(!validate()) return;
+
+      //  العرض التجريبي: عرض رسالة نجاح (في التطبيق الحقيقي سترسل إلى الخادم)
+      const remember = document.getElementById('remember').checked;
+      // هنا يمكنك استدعاء واجهة برمجة التطبيقات (fetch) لإرسال بيانات الدخول
+      alert('تم تسجيل الدخول بنجاح!\nالإيدي: ' + userId.value + '\nتذكرني: ' + (remember ? 'نعم' : 'لا'));
+      form.reset();
+      password.type = 'password';
+      togglePw.textContent = '👁️';
+    });
+  </script>
+</body>
+</html>
